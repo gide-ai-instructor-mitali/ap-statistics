@@ -1,6 +1,6 @@
-// Shared settings for the AP Statistics diagnostic.
-// Paste your Google Apps Script Web App URL (it ends in /exec) between the quotes.
-// Leave it empty to run without saving results (the dashboard will then ask for a URL).
 window.APP_CONFIG = {
-  SHEET_URL: ''
+  SHEET_URL: 'window.APP_CONFIG = {
+  SHEET_URL: 'https://script.google.com/macros/s/AKfycbzFiq80ucbNipkzuzKh59dR_oFxUjePqXdatZETpHGEyj2BVf2VJ92w_FuceKUHfGle3g/exec'
+};
+'
 };
