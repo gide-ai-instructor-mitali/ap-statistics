@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic Results — AP Statistics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/questions.js"></script>
+<style>
+  :root {
+    --crimson:    #C41230;
+    --crimson-dk: #8B0D22;
+    --crimson-lt: #E8C0C7;
+    --crimson-bg: #FDF0F2;
+    --white:      #FFFFFF;
+    --ink:        #1A1A1A;
+    --ink-2:      #3D3D3D;
+    --ink-3:      #6B6B6B;
+    --rule:       #D8D8D8;
+    --green:      #2E7D32;
+    --green-bg:   #E8F5E9;
+    --amber:      #E65100;
+    --amber-bg:   #FFF3E0;
+    --blue:       #1565C0;
+    --blue-bg:    #E3F2FD;
+    --purple:     #6A1B9A;
+    --purple-bg:  #F3E5F5;
+    --serif:      'Times New Roman', Times, Georgia, serif;
+    --sans:       'Helvetica Neue', Arial, sans-serif;
+    --radius:     3px;
+    --shadow:     0 2px 12px rgba(0,0,0,.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--serif);
+    background: #F2F2F2;
+    color: var(--ink);
+  }
+
+  /* ── Print styles ── */
+  @media print {
+    body { background: white; }
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    .card { box-shadow: none; border: 1px solid #ddd; }
+    header { position: static !important; }
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--white);
+    border-bottom: 4px solid var(--crimson);
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    gap: 16px;
+  }
+
+  .header-brand {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--crimson-dk);
+    line-height: 1.2;
+  }
+
+  .header-sub {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: .5px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1.5px solid var(--rule);
+    background: var(--white);
+    color: var(--ink-2);
+    transition: all .15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn:hover { border-color: var(--crimson); color: var(--crimson); }
+  .btn.primary { background: var(--crimson); color: var(--white); border-color: var(--crimson); }
+  .btn.primary:hover { background: var(--crimson-dk); }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── Hero Score Banner ── */
+  .score-hero {
+    background: var(--white);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .score-hero-top {
+    background: var(--crimson);
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .score-student {
+    color: var(--white);
+  }
+
+  .score-student-name {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .score-student-meta {
+    font-family: var(--sans);
+    font-size: 13px;
+    opacity: .85;
+  }
+
+  .score-big-number {
+    text-align: center;
+    color: var(--white);
+  }
+
+  .score-fraction {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-fraction sub {
+    font-size: 28px;
+    font-weight: 400;
+    opacity: .8;
+  }
+
+  .score-pct-label {
+    font-family: var(--sans);
+    font-size: 13px;
+    opacity: .8;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .score-hero-bottom {
+    padding: 20px 36px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--rule);
+  }
+
+  .score-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .score-stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .score-stat-val.green { color: var(--green); }
+  .score-stat-val.red   { color: var(--crimson); }
+  .score-stat-val.amber { color: var(--amber); }
+
+  .score-stat-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* AP Score Band */
+  .ap-band {
+    background: var(--crimson-bg);
+    border: 1.5px solid var(--crimson-lt);
+    border-radius: 4px;
+    padding: 16px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .ap-band-score {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--crimson);
+    line-height: 1;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .ap-band-info { flex: 1; }
+
+  .ap-band-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .ap-band-desc {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .ap-score-strip {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .ap-strip-seg {
+    flex: 1;
+    min-width: 40px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--rule);
+  }
+
+  .ap-strip-seg.active { background: var(--crimson); }
+
+  /* ── Section headers ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    margin-top: 36px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .section-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* ── Cards grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .card-body { padding: 16px 20px 20px; }
+
+  /* ── Unit table ── */
+  .unit-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--white);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .unit-table th {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    background: #F8F8F8;
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--rule);
+  }
+
+  .unit-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+
+  .unit-table tr:last-child td { border-bottom: none; }
+  .unit-table tr:hover td { background: #FAFAFA; }
+
+  .unit-name { font-weight: 700; font-size: 14px; }
+  .unit-sub  { font-family: var(--sans); font-size: 11px; color: var(--ink-3); }
+
+  .score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .pill-green  { background: var(--green-bg);  color: var(--green); }
+  .pill-amber  { background: var(--amber-bg);  color: var(--amber); }
+  .pill-red    { background: var(--crimson-bg); color: var(--crimson); }
+
+  .bar-track {
+    height: 8px;
+    background: var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    width: 120px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .6s ease;
+  }
+
+  .fill-green  { background: var(--green); }
+  .fill-amber  { background: var(--amber); }
+  .fill-red    { background: var(--crimson); }
+
+  .priority-badge {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  .priority-high   { background: #FFEBEE; color: var(--crimson); }
+  .priority-medium { background: #FFF3E0; color: var(--amber); }
+  .priority-low    { background: var(--green-bg); color: var(--green); }
+
+  /* ── Chart containers ── */
+  .chart-wrap {
+    position: relative;
+    padding: 16px;
+  }
+
+  .chart-wrap canvas { max-height: 280px; }
+
+  /* ── Big Ideas grid ── */
+  .bi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .bi-card {
+    background: var(--white);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    border-top: 4px solid var(--rule);
+  }
+
+  .bi-card.evo { border-top-color: #1565C0; }
+  .bi-card.ene { border-top-color: #2E7D32; }
+  .bi-card.ist { border-top-color: #6A1B9A; }
+  .bi-card.syi { border-top-color: #C41230; }
+
+  .bi-code {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .bi-evo .bi-code { color: #1565C0; }
+  .bi-ene .bi-code { color: #2E7D32; }
+  .bi-ist .bi-code { color: #6A1B9A; }
+  .bi-syi .bi-code { color: #C41230; }
+
+  .bi-name { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--ink); }
+
+  .bi-score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .bi-fraction {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    min-width: 52px;
+  }
+
+  .bi-bar-wrap {
+    flex: 1;
+    height: 10px;
+    background: var(--rule);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .bi-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+  }
+
+  .bi-pct {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* ── Question review ── */
+  .q-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .q-review-item {
+    background: var(--white);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .q-review-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+
+  .q-status-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .dot-correct { background: var(--green-bg);  color: var(--green); }
+  .dot-wrong   { background: var(--crimson-bg); color: var(--crimson); }
+  .dot-skipped { background: #FFF3E0; color: var(--amber); }
+
+  .q-review-meta { flex: 1; }
+  .q-review-unit { font-family: var(--sans); font-size: 11px; color: var(--ink-3); }
+  .q-review-cat  { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+  .q-review-body { padding: 18px 20px; }
+  .q-review-stem { font-size: 14px; line-height: 1.65; color: var(--ink); margin-bottom: 14px; }
+
+  .q-review-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .q-review-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 3px;
+    border: 1.5px solid var(--rule);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  .q-review-opt.is-correct { border-color: var(--green); background: var(--green-bg); }
+  .q-review-opt.is-wrong   { border-color: var(--crimson); background: var(--crimson-bg); }
+
+  .opt-ltr {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .is-correct .opt-ltr { background: var(--green); border-color: var(--green); color: white; }
+  .is-wrong   .opt-ltr { background: var(--crimson); border-color: var(--crimson); color: white; }
+
+  .q-visual svg { max-width: 100%; height: auto; }
+
+  .q-explanation-toggle {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: var(--crimson);
+    background: none;
+    border: 1.5px solid var(--crimson-lt);
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .q-explanation-toggle:hover { background: var(--crimson-bg); }
+
+  .q-explanation-body {
+    display: none;
+    margin-top: 14px;
+    background: #FFFDF5;
+    border: 1.5px solid #D4A843;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink-2);
+    white-space: pre-wrap;
+  }
+
+  .q-explanation-body.open { display: block; }
+
+  .exp-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #8B6914;
+    margin-bottom: 8px;
+  }
+
+  /* ── Recommendations ── */
+  .rec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rec-item {
+    background: var(--white);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 18px 22px;
+    border-left: 4px solid var(--rule);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rec-item.critical { border-left-color: var(--crimson); }
+  .rec-item.improve  { border-left-color: var(--amber); }
+  .rec-item.strength { border-left-color: var(--green); }
+
+  .rec-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .rec-content {}
+  .rec-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .rec-desc  { font-family: var(--sans); font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 2px solid var(--rule);
+    margin-bottom: 24px;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-3);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+
+  .tab-btn:hover { color: var(--crimson); }
+  .tab-btn.active { color: var(--crimson); border-bottom-color: var(--crimson); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── SP table ── */
+  .sp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sp-table th {
+    font-family: var(--sans); font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--ink-3);
+    background: #F8F8F8; padding: 9px 14px; text-align: left;
+    border-bottom: 2px solid var(--rule);
+  }
+  .sp-table td { padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+  .sp-table tr:last-child td { border-bottom: none; }
+
+  /* Footer */
+  .results-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 640px) {
+    .bi-grid { grid-template-columns: 1fr; }
+    .score-hero-top { flex-direction: column; text-align: center; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .q-review-options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-brand" style="flex-direction:row;align-items:center;gap:14px">
+      <img src="assets/gide-logo.svg" alt="GIDE.AI" style="height:26px;width:auto;flex-shrink:0">
+      <div>
+        <div class="header-title">AP Statistics — Diagnostic Results</div>
+        <div class="header-sub" id="headerSub">Loading…</div>
+      </div>
+    </div>
+    <div class="header-actions no-print">
+      <button class="btn" onclick="window.print()">⎙ Print Report</button>
+      <a href="index.html" class="btn primary">Retake Exam →</a>
+    </div>
+  </div>
+</header>
+
+<div class="page" id="resultsPage" style="display:none">
+
+  <!-- ── Score Hero ── -->
+  <div class="score-hero">
+    <div class="score-hero-top">
+      <div class="score-student">
+        <div class="score-student-name" id="heroName">—</div>
+        <div class="score-student-meta" id="heroMeta">—</div>
+      </div>
+      <div class="score-big-number">
+        <div class="score-fraction" id="heroFraction">—</div>
+        <div class="score-pct-label" id="heroPct">—</div>
+      </div>
+    </div>
+    <div class="score-hero-bottom" id="heroStats"></div>
+  </div>
+
+  <!-- AP Score Projection -->
+  <div class="ap-band" id="apBand"></div>
+
+  <!-- ── Tabs ── -->
+  <div class="tab-bar no-print">
+    <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="showTab('units')">By Unit</button>
+    <button class="tab-btn" onclick="showTab('skills')">Skills</button>
+    <button class="tab-btn" onclick="showTab('review')">Question Review</button>
+    <button class="tab-btn" onclick="showTab('recs')">Recommendations</button>
+  </div>
+
+  <!-- ══════════ TAB: OVERVIEW ══════════ -->
+  <div class="tab-panel active" id="tab-overview">
+
+    <div class="section-header">
+      <h2 class="section-title">Performance Snapshot</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Score by Unit</span></div>
+        <div class="chart-wrap"><canvas id="chartUnit"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Score by Difficulty</span></div>
+        <div class="chart-wrap"><canvas id="chartDiff"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Answer Distribution</span></div>
+        <div class="chart-wrap"><canvas id="chartDist"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:32px">
+      <h2 class="section-title">Statistical Practices</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="bi-grid" id="biGrid"></div>
+
+  </div>
+
+  <!-- ══════════ TAB: UNITS ══════════ -->
+  <div class="tab-panel" id="tab-units">
+    <div class="section-header">
+      <h2 class="section-title">Unit-by-Unit Breakdown</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <div class="chart-wrap" style="padding: 24px 20px;">
+        <canvas id="chartUnitDetail" style="max-height:320px"></canvas>
+      </div>
+    </div>
+
+    <table class="unit-table" id="unitTable">
+      <thead>
+        <tr>
+          <th>Unit</th>
+          <th>Score</th>
+          <th>Progress</th>
+          <th>%</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody id="unitTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ══════════ TAB: SKILLS ══════════ -->
+  <div class="tab-panel" id="tab-skills">
+    <div class="section-header">
+      <h2 class="section-title">Skill Analysis</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <div class="chart-wrap">
+        <canvas id="chartSP" style="max-height:300px"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table class="sp-table" id="spTable">
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Description</th>
+              <th>Score</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody id="spTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB: QUESTION REVIEW ══════════ -->
+  <div class="tab-panel" id="tab-review">
+    <div class="section-header">
+      <h2 class="section-title">Question-by-Question Review</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap" class="no-print">
+      <button class="btn" onclick="filterReview('all')" id="filter-all">All (40)</button>
+      <button class="btn" onclick="filterReview('wrong')" id="filter-wrong">Incorrect</button>
+      <button class="btn" onclick="filterReview('correct')" id="filter-correct">Correct</button>
+      <button class="btn" onclick="filterReview('skipped')" id="filter-skipped">Skipped</button>
+    </div>
+
+    <div class="q-review-list" id="reviewList"></div>
+  </div>
+
+  <!-- ══════════ TAB: RECOMMENDATIONS ══════════ -->
+  <div class="tab-panel" id="tab-recs">
+    <div class="section-header">
+      <h2 class="section-title">Personalized Study Plan</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="rec-list" id="recList"></div>
+  </div>
+
+  <div class="results-footer">
+    AP Statistics Diagnostic Assessment · 2026–2027 CED · Generated <span id="genDate"></span><br>
+    Results have been submitted to your instructor's dashboard.<br>
+    Powered by <strong>GIDE.AI</strong> × High School Moms · <a href="mailto:mitali@gide.ai" style="color:var(--crimson)">mitali@gide.ai</a>
+  </div>
+
+</div>
+
+<div id="errorPage" style="display:none; padding:80px 24px; text-align:center; font-family: sans-serif; color:#666;">
+  <h2 style="margin-bottom:12px">No results found</h2>
+  <p>Please complete the exam first.</p>
+  <a href="index.html" style="color:#C41230">← Return to exam</a>
+</div>
+
+<script>
+// ── Parse URL data ────────────────────────────────────────
+let DATA = null;
+
+try {
+  const stored = sessionStorage.getItem('apStatsResults');
+  if (stored) {
+    DATA = JSON.parse(stored);
+  } else {
+    // Fallback for old-style links that still pass ?data= in the URL
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('data');
+    if (!raw) throw new Error('no data');
+    DATA = JSON.parse(decodeURIComponent(raw));
+  }
+} catch (e) {
+  document.getElementById('errorPage').style.display = 'block';
+  throw e;
+}
+
+const { studentInfo, answers, scoreData, timeTaken } = DATA;
+const questions = AP_STATS_QUESTIONS;
+
+// ── SP descriptions ───────────────────────────────────────
+const SP_DESC = Object.fromEntries(Object.entries(AP_STATS_META.skills).map(([k, v]) => ['Skill ' + k, v]));
+
+// ── AP score projection ───────────────────────────────────
+function getAPScore(pct) {
+  if (pct >= 70) return { score: 5, label: 'Extremely well qualified', color: '#2E7D32' };
+  if (pct >= 55) return { score: 4, label: 'Well qualified', color: '#1565C0' };
+  if (pct >= 40) return { score: 3, label: 'Qualified', color: '#6A1B9A' };
+  if (pct >= 28) return { score: 2, label: 'Possibly qualified', color: '#E65100' };
+  return           { score: 1, label: 'No recommendation', color: '#C41230' };
+}
+
+function pillClass(pct) {
+  if (pct >= 70) return 'pill-green fill-green';
+  if (pct >= 45) return 'pill-amber fill-amber';
+  return 'pill-red fill-red';
+}
+
+function barColor(pct) {
+  if (pct >= 70) return 'fill-green';
+  if (pct >= 45) return 'fill-amber';
+  return 'fill-red';
+}
+
+function priorityLabel(pct) {
+  if (pct >= 70) return '<span class="priority-badge priority-low">Strength</span>';
+  if (pct >= 45) return '<span class="priority-badge priority-medium">Review</span>';
+  return '<span class="priority-badge priority-high">Priority</span>';
+}
+
+// ── Build page ────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('resultsPage').style.display = 'block';
+  document.getElementById('genDate').textContent = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+  const total    = scoreData.total;
+  const possible = questions.length;
+  const pct      = Math.round(total / possible * 100);
+  const wrong    = scoreData.wrongIds.length;
+  const skipped  = scoreData.skippedIds.length;
+  const ap       = getAPScore(pct);
+
+  // Header
+  document.getElementById('headerSub').textContent =
+    `${studentInfo.name} · ${studentInfo.period} · ${new Date().toLocaleDateString()}`;
+
+  // Hero
+  document.getElementById('heroName').textContent = studentInfo.name;
+  document.getElementById('heroMeta').textContent =
+    `${studentInfo.period} · ID: ${studentInfo.id} · Time: ${timeTaken} min`;
+  document.getElementById('heroFraction').innerHTML =
+    `${total}<sub> / ${possible}</sub>`;
+  document.getElementById('heroPct').textContent = `${pct}% Correct`;
+
+  document.getElementById('heroStats').innerHTML = `
+    <div class="score-stat"><span class="score-stat-val green">${total}</span><span class="score-stat-label">Correct</span></div>
+    <div class="score-stat"><span class="score-stat-val red">${wrong}</span><span class="score-stat-label">Incorrect</span></div>
+    <div class="score-stat"><span class="score-stat-val amber">${skipped}</span><span class="score-stat-label">Skipped</span></div>
+    <div class="score-stat"><span class="score-stat-val">${timeTaken} min</span><span class="score-stat-label">Time Taken</span></div>
+    <div class="score-stat"><span class="score-stat-val">${pct}%</span><span class="score-stat-label">Overall Score</span></div>
+  `;
+
+  // AP band
+  const segments = [1,2,3,4,5].map(s =>
+    `<div class="ap-strip-seg ${s <= ap.score ? 'active' : ''}"></div>`).join('');
+  document.getElementById('apBand').innerHTML = `
+    <div class="ap-band-score" style="color:${ap.color}">${ap.score}</div>
+    <div class="ap-band-info">
+      <div class="ap-band-label">Projected AP Score: ${ap.score} — ${ap.label}</div>
+      <div class="ap-band-desc">Based on ${pct}% on this diagnostic. The AP Exam scoring curve varies each year; this is a planning estimate from the multiple-choice section only; the revised 2027 exam has no published score conversion yet.</div>
+      <div class="ap-score-strip">${segments}</div>
+    </div>
+  `;
+
+  buildOverview(pct);
+  buildUnitTab();
+  buildSPTab();
+  buildReviewTab('all');
+  buildRecsTab(pct);
+});
+
+// ── Overview Charts ───────────────────────────────────────
+function buildOverview(overallPct) {
+  const units = scoreData.units;
+
+  // Unit bar chart (mini)
+  new Chart(document.getElementById('chartUnit'), {
+    type: 'bar',
+    data: {
+      labels: units.map(u => u.code),
+      datasets: [{
+        label: 'Score %',
+        data: units.map(u => u.pct),
+        backgroundColor: units.map(u => u.pct >= 70 ? '#2E7D32' : u.pct >= 45 ? '#E65100' : '#C41230'),
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => `${ctx.raw}% (${units[ctx.dataIndex].correct}/${units[ctx.dataIndex].total})` }
+      }},
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: v => v+'%', font:{size:11} }, grid:{color:'#F0F0F0'} },
+        x: { ticks: { font:{size:11} }, grid:{display:false} }
+      }
+    }
+  });
+
+  // Difficulty doughnut
+  const diffData = computeDiffData();
+  new Chart(document.getElementById('chartDiff'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Foundational', 'Application', 'Analysis'],
+      datasets: [{
+        data: [diffData.d1.pct, diffData.d2.pct, diffData.d3.pct],
+        backgroundColor: ['#2E7D32','#E65100','#C41230'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'bottom', labels:{ font:{size:11}, padding:12 } },
+        tooltip: {
+          callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}% correct` }
+        }
+      }
+    }
+  });
+
+  // Answer distribution
+  const distData = computeDistData();
+  new Chart(document.getElementById('chartDist'), {
+    type: 'bar',
+    data: {
+      labels: ['A','B','C','D','Skipped'],
+      datasets: [
+        { label: 'Your answers', data: distData.selected, backgroundColor: '#C41230', borderRadius:3 },
+        { label: 'Correct answers', data: distData.correct, backgroundColor: 'rgba(46,125,50,0.3)', borderRadius:3, borderWidth:1, borderColor:'#2E7D32' }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position:'bottom', labels:{font:{size:11}, padding:10} } },
+      scales: {
+        y: { beginAtZero:true, ticks:{font:{size:11}, stepSize:1}, grid:{color:'#F0F0F0'} },
+        x: { ticks:{font:{size:11}}, grid:{display:false} }
+      }
+    }
+  });
+
+  // Big Ideas
+  buildBiGrid();
+}
+
+function computeDiffData() {
+  const d1 = {c:0,t:0}, d2 = {c:0,t:0}, d3 = {c:0,t:0};
+  questions.forEach((q,i) => {
+    const dnum = q.difficulty.split('—')[0].trim();
+    const obj = dnum==='1'?d1:dnum==='2'?d2:d3;
+    obj.t++;
+    if (answers[i] === q.correct) obj.c++;
+  });
+  return {
+    d1: { ...d1, pct: d1.t?Math.round(d1.c/d1.t*100):0 },
+    d2: { ...d2, pct: d2.t?Math.round(d2.c/d2.t*100):0 },
+    d3: { ...d3, pct: d3.t?Math.round(d3.c/d3.t*100):0 },
+  };
+}
+
+function computeDistData() {
+  const sel = {A:0,B:0,C:0,D:0,Skipped:0};
+  const cor = {A:0,B:0,C:0,D:0,Skipped:0};
+  questions.forEach((q,i) => {
+    const s = answers[i];
+    if (s) sel[s]++; else sel.Skipped++;
+    cor[q.correct]++;
+  });
+  return {
+    selected: [sel.A,sel.B,sel.C,sel.D,sel.Skipped],
+    correct:  [cor.A,cor.B,cor.C,cor.D,0]
+  };
+}
+
+function buildBiGrid() {
+  const biMap = { P1:{c:0,t:0}, P2:{c:0,t:0}, P3:{c:0,t:0}, P4:{c:0,t:0} };
+  questions.forEach((q,i) => {
+    const bi = q.big_idea;
+    if (!biMap[bi]) return;
+    biMap[bi].t++;
+    if (answers[i] === q.correct) biMap[bi].c++;
+  });
+
+  // Four statistical practices reuse the four existing colour classes (evo / ene / ist / syi).
+  const clsFor = { P1:'evo', P2:'ene', P3:'ist', P4:'syi' };
+  const biInfo = {};
+  Object.entries(AP_STATS_META.practices).forEach(([k, p]) => {
+    biInfo[k] = { label:'P' + p.num, name:p.name, cls:clsFor[k] };
+  });
+
+  const html = Object.entries(biMap).map(([key,val]) => {
+    const info = biInfo[key];
+    const pct = val.t ? Math.round(val.c/val.t*100) : 0;
+    const barC = pct>=70?'#2E7D32':pct>=45?'#E65100':'#C41230';
+    const pctC = pct>=70?'var(--green)':pct>=45?'var(--amber)':'var(--crimson)';
+    return `
+      <div class="bi-card bi-${info.cls}">
+        <div class="bi-${info.cls} bi-code">${info.label}</div>
+        <div class="bi-name">${info.name}</div>
+        <div class="bi-score-row">
+          <div class="bi-fraction">${val.c}/${val.t}</div>
+          <div class="bi-bar-wrap">
+            <div class="bi-bar-fill" style="width:${pct}%;background:${barC}"></div>
+          </div>
+          <div class="bi-pct" style="color:${pctC}">${pct}%</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('biGrid').innerHTML = html;
+}
+
+// ── Unit Tab ──────────────────────────────────────────────
+function buildUnitTab() {
+  const units = scoreData.units;
+
+  // Grouped bar chart
+  new Chart(document.getElementById('chartUnitDetail'), {
+    type: 'bar',
+    data: {
+      labels: units.map(u => u.name),
+      datasets: [
+        {
+          label: 'Correct',
+          data: units.map(u => u.correct),
+          backgroundColor: '#C41230',
+          borderRadius: 3,
+        },
+        {
+          label: 'Incorrect / Skipped',
+          data: units.map(u => u.total - u.correct),
+          backgroundColor: '#F0F0F0',
+          borderRadius: 3,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position:'bottom', labels:{ font:{size:11}, padding:12 } },
+      },
+      scales: {
+        x: { stacked: true, ticks:{ font:{size:10}, maxRotation:30 }, grid:{display:false} },
+        y: { stacked: true, ticks:{ font:{size:11}, stepSize:1 }, grid:{color:'#F0F0F0'}, max:Math.max(...units.map(u => u.total)) }
+      }
+    }
+  });
+
+  // Table
+  const tbody = document.getElementById('unitTableBody');
+  tbody.innerHTML = units.map(u => {
+    const [pill, fill] = pillClass(u.pct).split(' ');
+    return `
+      <tr>
+        <td>
+          <div class="unit-name">${u.code}</div>
+          <div class="unit-sub">${u.name}</div>
+        </td>
+        <td><span class="${pill} score-pill">${u.correct}/${u.total}</span></td>
+        <td>
+          <div class="bar-track">
+            <div class="bar-fill ${fill}" style="width:${u.pct}%"></div>
+          </div>
+        </td>
+        <td style="font-family:var(--sans);font-weight:700;font-size:13px">${u.pct}%</td>
+        <td>${priorityLabel(u.pct)}</td>
+      </tr>`;
+  }).join('');
+}
+
+// ── SP Tab ────────────────────────────────────────────────
+function buildSPTab() {
+  const spMap = {};
+  questions.forEach((q,i) => {
+    const sp = q.sp;
+    if (!spMap[sp]) spMap[sp] = {c:0,t:0};
+    spMap[sp].t++;
+    if (answers[i] === q.correct) spMap[sp].c++;
+  });
+
+  const spKeys = Object.keys(spMap).sort();
+
+  // Radar / horizontal bar
+  new Chart(document.getElementById('chartSP'), {
+    type: 'bar',
+    data: {
+      labels: spKeys,
+      datasets: [{
+        label: 'Score %',
+        data: spKeys.map(k => Math.round(spMap[k].c/spMap[k].t*100)),
+        backgroundColor: spKeys.map(k => {
+          const p = Math.round(spMap[k].c/spMap[k].t*100);
+          return p>=70?'#2E7D32':p>=45?'#E65100':'#C41230';
+        }),
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: { legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${ctx.raw}%`}} },
+      scales: {
+        x: { beginAtZero:true, max:100, ticks:{callback:v=>v+'%',font:{size:11}}, grid:{color:'#F0F0F0'} },
+        y: { ticks:{font:{size:11}}, grid:{display:false} }
+      }
+    }
+  });
+
+  // Table
+  const tbody = document.getElementById('spTableBody');
+  tbody.innerHTML = spKeys.map(sp => {
+    const v = spMap[sp];
+    const pct = Math.round(v.c/v.t*100);
+    const [pill, fill] = pillClass(pct).split(' ');
+    return `
+      <tr>
+        <td style="font-family:var(--sans);font-weight:700;font-size:12px;white-space:nowrap">${sp}</td>
+        <td style="color:var(--ink-2)">${SP_DESC[sp] || sp}</td>
+        <td><span class="${pill} score-pill">${v.c}/${v.t}</span></td>
+        <td style="font-family:var(--sans);font-weight:700;font-size:13px">${pct}%</td>
+      </tr>`;
+  }).join('');
+}
+
+// ── Review Tab ────────────────────────────────────────────
+let reviewFilter = 'all';
+
+function buildReviewTab(filter) {
+  reviewFilter = filter;
+  ['all','wrong','correct','skipped'].forEach(f => {
+    document.getElementById(`filter-${f}`)?.classList.toggle('primary', f === filter);
+  });
+
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+
+  questions.forEach((q, i) => {
+    const sel = answers[i];
+    const isCorrect = sel === q.correct;
+    const isSkipped = sel === undefined;
+
+    if (filter === 'correct' && !isCorrect) return;
+    if (filter === 'wrong'   && (isCorrect || isSkipped)) return;
+    if (filter === 'skipped' && !isSkipped) return;
+
+    let statusCls, statusText, dotCls;
+    if (isSkipped)      { statusCls = 'dot-skipped'; statusText = '–'; dotCls='skipped'; }
+    else if (isCorrect) { statusCls = 'dot-correct'; statusText = '✓'; dotCls='correct'; }
+    else                { statusCls = 'dot-wrong';   statusText = '✗'; dotCls='wrong'; }
+
+    const optionsHtml = ['A','B','C','D'].map(l => {
+      let cls = 'q-review-opt';
+      if (l === q.correct) cls += ' is-correct';
+      else if (l === sel && !isCorrect) cls += ' is-wrong';
+      const icon = l === q.correct ? '✓' : (l === sel && !isCorrect) ? '✗' : l;
+      return `<div class="${cls}">
+        <div class="opt-ltr">${icon}</div>
+        <div>${escHtml(q.options[l] || '')}</div>
+      </div>`;
+    }).join('');
+
+    const item = document.createElement('div');
+    item.className = 'q-review-item';
+    item.innerHTML = `
+      <div class="q-review-header">
+        <div class="q-status-dot ${statusCls}">${statusText}</div>
+        <div class="q-review-meta">
+          <div class="q-review-unit">${escHtml(q.unit)} · ${escHtml(q.sp)} · ${escHtml(q.difficulty)}</div>
+          <div class="q-review-cat">${escHtml(q.category)}</div>
+        </div>
+        <span style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink-3)">Q${i+1}</span>
+      </div>
+      <div class="q-review-body">
+        <div class="q-review-stem">${escHtml(q.stem)}</div>
+        ${q.visual ? `<div class="q-visual" style="margin-bottom:16px;padding:14px;background:#FAFAF8;border:1px solid #E0DDD5;border-radius:6px;overflow-x:auto;text-align:center">${q.visual}</div>` : ''}
+        <div class="q-review-options">${optionsHtml}</div>
+        ${sel ? `<div style="font-family:var(--sans);font-size:12px;color:var(--ink-3);margin-bottom:10px">
+          Your answer: <strong>${sel}</strong> &nbsp;·&nbsp; Correct: <strong>${q.correct}</strong>
+        </div>` : `<div style="font-family:var(--sans);font-size:12px;color:var(--amber);margin-bottom:10px">Not answered · Correct: <strong>${q.correct}</strong></div>`}
+        <button class="q-explanation-toggle" onclick="toggleExp(this)">Show Explanation</button>
+        <div class="q-explanation-body">
+          <div class="exp-label">Explanation</div>
+          ${escHtml(q.explanation)}
+        </div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function filterReview(f) { buildReviewTab(f); }
+
+function toggleExp(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? 'Hide Explanation' : 'Show Explanation';
+}
+
+// ── Recs Tab ──────────────────────────────────────────────
+function buildRecsTab(pct) {
+  const units = scoreData.units;
+  const priorityUnits = units.filter(u => u.pct < 45).sort((a,b) => a.pct - b.pct);
+  const reviewUnits   = units.filter(u => u.pct >= 45 && u.pct < 70).sort((a,b) => a.pct - b.pct);
+  const strengthUnits = units.filter(u => u.pct >= 70);
+
+  const recs = [];
+
+  // Critical gaps
+  if (priorityUnits.length > 0) {
+    priorityUnits.forEach(u => {
+      recs.push({
+        type: 'critical',
+        icon: '🔴',
+        title: `Priority Focus: ${u.code} — ${u.name}`,
+        desc: `You scored ${u.correct}/${u.total} (${u.pct}%) on this unit. Review core concepts before the AP exam. Focus on completing all CED learning objectives for this unit. Rework the missed questions, then try the matching AP Classroom Progress Check for this unit.`
+      });
+    });
+  }
+
+  // Review needed
+  reviewUnits.forEach(u => {
+    recs.push({
+      type: 'improve',
+      icon: '🟡',
+      title: `Review Needed: ${u.code} — ${u.name}`,
+      desc: `You scored ${u.correct}/${u.total} (${u.pct}%) — solid foundation but room to improve. Revisit challenging topics within this unit and practice application-level questions.`
+    });
+  });
+
+  // Strengths
+  if (strengthUnits.length > 0) {
+    recs.push({
+      type: 'strength',
+      icon: '🟢',
+      title: `Strengths: ${strengthUnits.map(u=>u.code).join(', ')}`,
+      desc: `You performed well (≥70%) on ${strengthUnits.map(u=>u.name).join(', ')}. Maintain this knowledge by doing periodic review and challenging yourself with harder AP-level questions.`
+    });
+  }
+
+  // SP gaps
+  const spMap = {};
+  questions.forEach((q,i) => {
+    if (!spMap[q.sp]) spMap[q.sp] = {c:0,t:0};
+    spMap[q.sp].t++;
+    if (answers[i] === q.correct) spMap[q.sp].c++;
+  });
+
+  const weakSPs = Object.entries(spMap).filter(([,v]) => v.t >= 2 && v.c/v.t < 0.5);
+  if (weakSPs.length > 0) {
+    weakSPs.forEach(([sp, v]) => {
+      recs.push({
+        type: 'critical',
+        icon: '📊',
+        title: `Skill Gap: ${sp}`,
+        desc: `You scored ${v.c}/${v.t} on ${sp} — "${SP_DESC[sp] || sp}". Practice this skill by working questions that require ${sp.includes('Skill 3.') ? 'calculations: write the formula, substitute the values, and state the result with units' : sp.includes('Skill 4.') ? 'interpretations and conclusions: answer in context, referring to the evidence (a p-value, an interval, or a graph)' : sp.includes('Skill 2.') ? 'choosing a method or design and checking its conditions' : 'writing a clear investigative question that names the population, variable, and type of conclusion'}.`
+      });
+    });
+  }
+
+  // Difficulty breakdown
+  const diff = computeDiffData2();
+  if (diff.d3.pct < 40) {
+    recs.push({
+      type: 'improve',
+      icon: '⬆️',
+      title: 'Work on Analysis-Level (Hard) Questions',
+      desc: `You scored ${diff.d3.pct}% on analysis-level questions. These require multi-step reasoning and deep conceptual understanding. Practice by explaining your reasoning step-by-step before choosing an answer.`
+    });
+  }
+
+  // General AP exam tip
+  recs.push({
+    type: pct >= 60 ? 'strength' : 'improve',
+    icon: '📝',
+    title: 'AP Exam Strategy',
+    desc: `With a diagnostic score of ${pct}%, ${pct>=60 ? 'you are on track for a 4 or 5. Keep practicing with timed conditions and focus on elimination strategies for challenging questions.' : 'prioritize your weakest units first. Study 1–2 units per week with active recall (re-working missed problems, practice questions, self-testing). Use the AP Classroom Progress Checks aligned to the 2026-2027 CED. On free response, always answer in context.'}`
+  });
+
+  document.getElementById('recList').innerHTML = recs.map(r => `
+    <div class="rec-item ${r.type}">
+      <div class="rec-icon">${r.icon}</div>
+      <div class="rec-content">
+        <div class="rec-title">${r.title}</div>
+        <div class="rec-desc">${r.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function computeDiffData2() {
+  const d1={c:0,t:0},d2={c:0,t:0},d3={c:0,t:0};
+  questions.forEach((q,i)=>{
+    const d=q.difficulty.split('—')[0].trim();
+    const o=d==='1'?d1:d==='2'?d2:d3;
+    o.t++;
+    if(answers[i]===q.correct)o.c++;
+  });
+  return {
+    d1:{...d1,pct:d1.t?Math.round(d1.c/d1.t*100):0},
+    d2:{...d2,pct:d2.t?Math.round(d2.c/d2.t*100):0},
+    d3:{...d3,pct:d3.t?Math.round(d3.c/d3.t*100):0}
+  };
+}
+
+// ── Tabs ──────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${id}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function escHtml(str) {
+  return String(str||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
